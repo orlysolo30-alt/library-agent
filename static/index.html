@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>סוכן הספרייה — ניתוח ספרותי</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;700;900&family=Assistant:wght@300;400;600&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+  <style>
+    :root {
+      --ink: #1a1410;
+      --gold: #c4983a;
+      --gold-light: #e8c060;
+      --cream: #ede8dc;
+      --muted: #a09070;
+      --card-bg: #faf7f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #221a0f;
+      background-image: radial-gradient(ellipse at top, #3a2c18 0%, #180f05 100%);
+      min-height: 100vh;
+      font-family: 'Assistant', Arial, sans-serif;
+      color: var(--cream);
+      direction: rtl;
+    }
+
+    /* ── HEADER ── */
+    header {
+      text-align: center;
+      padding: 4rem 1.5rem 2.5rem;
+    }
+
+    header::after {
+      content: '';
+      display: block;
+      width: 56px;
+      height: 2px;
+      background: var(--gold);
+      margin: 1.5rem auto 0;
+    }
+
+    .header-icon { font-size: 3rem; display: block; margin-bottom: 1rem; }
+
+    h1 {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      font-weight: 900;
+      color: var(--gold-light);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.02em;
+    }
+
+    header p { color: var(--muted); font-size: 0.95rem; font-weight: 300; }
+
+    /* ── FORM CARD ── */
+    .form-wrapper { max-width: 640px; margin: 2rem auto 3rem; padding: 0 1.25rem; }
+
+    .form-card {
+      background: rgba(255 255 255 / 0.04);
+      border: 1px solid rgba(196 152 58 / 0.22);
+      border-radius: 16px;
+      padding: 2.25rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 20px 60px rgba(0 0 0 / 0.45);
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 0.45rem;
+    }
+
+    .input-group input {
+      width: 100%;
+      background: rgba(255 255 255 / 0.06);
+      border: 1px solid rgba(255 255 255 / 0.1);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      color: var(--cream);
+      font-family: 'Assistant', Arial, sans-serif;
+      font-size: 1rem;
+      direction: rtl;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+
+    .input-group input::placeholder { color: #6a5840; }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: rgba(196 152 58 / 0.55);
+      background: rgba(255 255 255 / 0.09);
+      box-shadow: 0 0 0 3px rgba(196 152 58 / 0.1);
+    }
+
+    .analyze-btn {
+      width: 100%;
+      padding: 0.95rem;
+      background: linear-gradient(135deg, #c4983a, #e8c060);
+      color: #1a1208;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+      box-shadow: 0 4px 20px rgba(196 152 58 / 0.3);
+    }
+
+    .analyze-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 7px 26px rgba(196 152 58 / 0.45);
+    }
+
+    .analyze-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+    /* ── RESULT ── */
+    #result-section {
+      max-width: 860px;
+      margin: 0 auto 5rem;
+      padding: 0 1.25rem;
+      display: none;
+    }
+
+    .result-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .result-book-label {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.2rem;
+      color: var(--gold-light);
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: 1px solid rgba(196 152 58 / 0.28);
+      color: var(--muted);
+      padding: 0.38rem 1.1rem;
+      border-radius: 6px;
+      font-family: 'Assistant', Arial, sans-serif;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .copy-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .result-card {
+      background: var(--card-bg);
+      color: #2c2010;
+      border-radius: 16px;
+      padding: clamp(1.5rem, 4vw, 3rem);
+      box-shadow: 0 25px 80px rgba(0 0 0 / 0.55);
+      line-height: 1.9;
+      min-height: 120px;
+    }
+
+    /* ── MARKDOWN ── */
+    .result-card h1 {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: clamp(1.3rem, 3.5vw, 1.7rem);
+      color: #1a1208;
+      margin: 0 0 1.25rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 2px solid var(--gold);
+    }
+
+    .result-card h2 {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.15rem;
+      color: #3d2c10;
+      margin: 2.25rem 0 0.8rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid #ddd3b8;
+    }
+
+    .result-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #3d2c10;
+      margin: 1.2rem 0 0.45rem;
+    }
+
+    .result-card p { margin: 0.7rem 0; }
+
+    .result-card ul,
+    .result-card ol { padding-right: 1.5rem; margin: 0.5rem 0; }
+
+    .result-card li { margin: 0.35rem 0; }
+
+    .result-card strong { color: #5c3a10; }
+
+    .result-card em { color: #6a4f30; font-style: italic; }
+
+    .result-card blockquote {
+      border-right: 3px solid var(--gold);
+      padding: 0.5rem 1.2rem;
+      margin: 1.2rem 0;
+      color: #5c4828;
+      font-style: italic;
+      background: rgba(196 152 58 / 0.06);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .result-card hr {
+      border: none;
+      border-top: 1px solid #ddd3b8;
+      margin: 1.75rem 0;
+    }
+
+    .result-card code {
+      background: rgba(0 0 0 / 0.06);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    /* ── STREAMING CURSOR ── */
+    .cursor::after {
+      content: '▋';
+      color: var(--gold);
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ── LOADING ── */
+    .loading-placeholder {
+      color: #b0a080;
+      font-style: italic;
+      text-align: center;
+      padding: 2.5rem 1rem;
+      font-size: 1.05rem;
+    }
+
+    .dots::after {
+      content: '';
+      animation: dots 1.6s infinite;
+    }
+
+    @keyframes dots {
+      0%  { content: ''; }
+      25% { content: '.'; }
+      50% { content: '..'; }
+      75% { content: '...'; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 560px) {
+      .input-row { grid-template-columns: 1fr; }
+      .form-card { padding: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="header-icon">📚</span>
+  <h1>סוכן הספרייה</h1>
+  <p>ניתוח ספרותי מעמיק — עלילה · דמויות · דימויים · ביקורת · שאלות לדיון</p>
+</header>
+
+<div class="form-wrapper">
+  <div class="form-card">
+    <div class="input-row">
+      <div class="input-group">
+        <label for="book">שם הספר</label>
+        <input id="book" type="text" placeholder="למשל: מחשבות לילה" autocomplete="off" />
+      </div>
+      <div class="input-group">
+        <label for="author">סופר / סופרת</label>
+        <input id="author" type="text" placeholder="למשל: עמוס עוז" autocomplete="off" />
+      </div>
+    </div>
+    <button class="analyze-btn" id="analyze-btn" onclick="startAnalysis()">
+      ✦ נתח את הספר
+    </button>
+  </div>
+</div>
+
+<div id="result-section">
+  <div class="result-meta">
+    <span class="result-book-label" id="result-label"></span>
+    <button class="copy-btn" onclick="copyResult()">העתק ניתוח</button>
+  </div>
+  <div class="result-card" id="result-card">
+    <div class="loading-placeholder"><span class="dots">מכין ניתוח</span></div>
+  </div>
+</div>
+
+<script>
+  marked.setOptions({ breaks: true });
+
+  let rawText = "";
+  let streaming = false;
+
+  async function startAnalysis() {
+    const book = document.getElementById("book").value.trim();
+    const author = document.getElementById("author").value.trim();
+
+    if (!book) { document.getElementById("book").focus(); return; }
+    if (!author) { document.getElementById("author").focus(); return; }
+    if (streaming) return;
+
+    streaming = true;
+    rawText = "";
+
+    const btn = document.getElementById("analyze-btn");
+    btn.disabled = true;
+    btn.textContent = "מנתח...";
+
+    const section = document.getElementById("result-section");
+    section.style.display = "block";
+    document.getElementById("result-label").textContent = `«${book}» / ${author}`;
+
+    const card = document.getElementById("result-card");
+    card.innerHTML = '<div class="loading-placeholder"><span class="dots">מנתח</span></div>';
+
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    try {
+      const response = await fetch("/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ book, author }),
+      });
+
+      if (!response.ok) {
+        const msg = await response.text();
+        throw new Error(msg || `שגיאת שרת ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let buffer = "";
+      let firstChunk = true;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const data = line.slice(6);
+          if (data === "[DONE]") { finish(); return; }
+
+          try {
+            const parsed = JSON.parse(data);
+            if (parsed.error) {
+              card.innerHTML = `<p style="color:#b94040">שגיאה: ${parsed.error}</p>`;
+              finish();
+              return;
+            }
+            if (firstChunk) { card.innerHTML = ""; firstChunk = false; }
+            rawText += parsed.text;
+            card.innerHTML =
+              marked.parse(rawText) + '<span class="cursor"></span>';
+          } catch (_) {}
+        }
+      }
+      finish();
+    } catch (err) {
+      card.innerHTML = `<p style="color:#b94040">שגיאה: ${err.message}</p>`;
+      finish();
+    }
+  }
+
+  function finish() {
+    streaming = false;
+    const btn = document.getElementById("analyze-btn");
+    btn.disabled = false;
+    btn.textContent = "✦ נתח ספר נוסף";
+    if (rawText) {
+      document.getElementById("result-card").innerHTML = marked.parse(rawText);
+    }
+  }
+
+  function copyResult() {
+    if (!rawText) return;
+    navigator.clipboard.writeText(rawText).then(() => {
+      const btn = document.querySelector(".copy-btn");
+      const orig = btn.textContent;
+      btn.textContent = "✓ הועתק!";
+      setTimeout(() => (btn.textContent = orig), 2500);
+    });
+  }
+
+  document.getElementById("book").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("author").focus();
+  });
+  document.getElementById("author").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") startAnalysis();
+  });
+</script>
+</body>
+</html>

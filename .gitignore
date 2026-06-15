@@ -1,0 +1,6 @@
+.env
+ניתוחים/
+__pycache__/
+*.pyc
+.venv/
+venv/
