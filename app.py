@@ -172,7 +172,7 @@ async def analyze(req: BookRequest, request: Request):
     def _stream():
         try:
             for chunk in client.models.generate_content_stream(
-                model="gemini-2.0-flash",
+                model="gemini-1.5-flash",
                 contents=prompt,
                 config=config,
             ):
