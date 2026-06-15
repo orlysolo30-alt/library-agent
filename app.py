@@ -3,7 +3,7 @@ from fastapi.responses import StreamingResponse, FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from groq import Groq
+from openai import OpenAI
 import json
 import os
 import sqlite3
@@ -147,14 +147,17 @@ async def analyze(req: BookRequest, request: Request):
     if not name or not book or not author:
         raise HTTPException(400, "Missing fields")
 
-    api_key = os.environ.get("GROQ_API_KEY")
-    if not api_key:
+    gh_token = os.environ.get("GITHUB_TOKEN")
+    if not gh_token:
         raise HTTPException(500, "Server configuration error")
 
     ip = request.client.host if request.client else "unknown"
     log_use(name, book, author, ip)
 
-    client = Groq(api_key=api_key)
+    client = OpenAI(
+        base_url="https://models.inference.ai.azure.com",
+        api_key=gh_token,
+    )
     prompt = (
         f"ניתוח ספרותי מלא ומעמיק: «{book}» מאת {author}.\n"
         "עברי על כל הסעיפים — אל תדלגי על אף אחד. כתבי בצורה אינטלקטואלית ועשירה."
@@ -166,13 +169,13 @@ async def analyze(req: BookRequest, request: Request):
     def _stream():
         try:
             stream = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="Llama-3.3-70B-Instruct",
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": prompt},
                 ],
                 stream=True,
-                max_tokens=8192,
+                max_tokens=8000,
             )
             for chunk in stream:
                 text = chunk.choices[0].delta.content
