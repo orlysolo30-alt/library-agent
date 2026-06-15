@@ -3,8 +3,7 @@ from fastapi.responses import StreamingResponse, FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from google import genai
-from google.genai import types as genai_types
+from groq import Groq
 import json
 import os
 import sqlite3
@@ -148,36 +147,37 @@ async def analyze(req: BookRequest, request: Request):
     if not name or not book or not author:
         raise HTTPException(400, "Missing fields")
 
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
         raise HTTPException(500, "Server configuration error")
 
     ip = request.client.host if request.client else "unknown"
     log_use(name, book, author, ip)
 
-    client = genai.Client(api_key=api_key)
+    client = Groq(api_key=api_key)
     prompt = (
         f"ניתוח ספרותי מלא ומעמיק: «{book}» מאת {author}.\n"
         "עברי על כל הסעיפים — אל תדלגי על אף אחד. כתבי בצורה אינטלקטואלית ועשירה."
     )
-    config = genai_types.GenerateContentConfig(
-        system_instruction=SYSTEM_PROMPT,
-        max_output_tokens=8192,
-    )
 
-    # Run blocking Gemini stream in a thread; feed chunks via asyncio.Queue
     queue: asyncio.Queue = asyncio.Queue()
     loop = asyncio.get_event_loop()
 
     def _stream():
         try:
-            for chunk in client.models.generate_content_stream(
-                model="gemini-1.5-flash",
-                contents=prompt,
-                config=config,
-            ):
-                if chunk.text:
-                    loop.call_soon_threadsafe(queue.put_nowait, chunk.text)
+            stream = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": prompt},
+                ],
+                stream=True,
+                max_tokens=8192,
+            )
+            for chunk in stream:
+                text = chunk.choices[0].delta.content
+                if text:
+                    loop.call_soon_threadsafe(queue.put_nowait, text)
             loop.call_soon_threadsafe(queue.put_nowait, None)
         except Exception as exc:
             loop.call_soon_threadsafe(queue.put_nowait, exc)
