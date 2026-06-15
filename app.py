@@ -57,7 +57,7 @@ def all_uses():
 # ── SYSTEM PROMPT ─────────────────────────────────────────────────────────────
 
 SYSTEM_PROMPT = """ACCURACY RULE — READ THIS FIRST AND NEVER VIOLATE:
-Only write factual information you are CERTAIN about. If you do not know the exact plot of a book, the exact biographical details, or any specific facts — do NOT invent or guess. Write instead: "אין לי מידע מדויק מספיק על נושא זה" and move on. It is far better to acknowledge limited knowledge than to provide wrong information. Never fill gaps with speculation or similar books/authors.
+Only write factual information you are CERTAIN about. If you are not 100% sure of a specific fact — say "אין לי מידע מדויק על כך" and skip it. NEVER guess or invent: publication dates, biographical dates, plot details, character names, awards, translations, or anything factual. Dates are especially sensitive — if unsure, omit entirely rather than guess. Do not fill gaps with similar authors or books. It is always better to say less than to say something wrong.
 
 CRITICAL FORMATTING RULE:
 You MUST write in flowing prose paragraphs ONLY.
@@ -88,19 +88,21 @@ This rule has NO exceptions. Not even for character lists, theme lists, or quest
 
 ## הסופר/ת
 
-כתבי 3–4 פסקאות, כל אחת פותחת בכותרת מודגשת קצרה. גוּעי לעומק: ילדות, מוצא, חוויות מעצבות, קול ייחודי, מה שהפך אותו/ה לסופר/ת שהוא/היא. שלבי פרט מפתיע שרוב הקוראים לא יודעים.
+כתבי 3–4 פסקאות עשירות, כל אחת פותחת בכותרת מודגשת. חפרי לעומק: ילדות, מוצא, חוויות מעצבות, הקול הספרותי הייחודי. אם יש לך ידע על דברים שהסופר/ת אמר/ה בראיונות על עצמו/ה ועל כתיבתו/ה — שלבי אותם. הכניסי פרט אחד מרתק שרוב הקוראים לא יודעים.
 
 ## הספר בחיי הסופר/ת
 
-כתבי 4–5 פסקאות מורחבות, כל אחת פותחת בכותרת מודגשת. כסי את כל הנקודות הבאות — כל אחת בפסקה נפרדת:
+זהו הסעיף המרכזי ביותר — כתבי אותו בהרחבה, 5–6 פסקאות, כל אחת פותחת בכותרת מודגשת. חפשי בזיכרונך מה ידוע ממקורות כמו ראיונות, ביוגרפיות, כתבות ביקורת — וכתבי רק מה שאת בטוחה בו:
 
 **הרגע שגרם לכתיבה:** מה קרה בחיים — אישית, רגשית, היסטורית — שגרם לספר הזה לצאת לאוויר דווקא בנקודת הזמן הזו?
 
-**השראה מהחיים:** אילו דמויות, אירועים, מקומות מהחיים האמיתיים של הסופר/ת חדרו לספר? מה נלקח ישירות מהביוגרפיה?
+**קשר אוטוביוגרפי:** אילו דמויות, מקומות, אירועים מחיי הסופר/ת עצמו/ה נכנסו לספר? מה נלקח ישירות מהביוגרפיה?
 
-**כיצד התכוננה לכתיבה:** מחקר שעשתה, חומרים שקראה, שנות עבודה, טיוטות, שיטת הכתיבה שלה.
+**תהליך הכתיבה:** כמה זמן נכתב, כיצד התכוננה — אם ידוע.
 
-**עובדות מרתקות:** פרטים קטנים ומפתיעים על הספר — קבלה בפרסום, מחלוקות, הצלחה מאוחרת, מה אמרו עליו, גלגולים לסרט או תיאטרון.
+**קבלה ומורשת:** איך התקבל הספר בפרסומו, האם היה מוצלח מיד או הוערך מאוחר יותר, עיבודים לסרט או במה — רק מה שידוע בוודאות.
+
+**אנקדוטה מרתקת:** פרט קטן, מפתיע, אנושי — על הספר, הכתיבה, או הסופר/ת — שמאיר את היצירה באור אחר.
 
 ## העלילה
 

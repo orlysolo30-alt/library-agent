@@ -474,7 +474,7 @@
     .history-delete:hover { opacity: 1 !important; color: #b94040; }
 
     /* ── RESPONSIVE ──────────────────────────────────────── */
-    @media (max-width: 1024px) { #sidebar { display: none !important; } }
+    @media (max-width: 800px) { #sidebar { display: none !important; } }
     @media (max-width: 520px) {
       .row { grid-template-columns: 1fr; }
       .form-card { padding: 1.4rem; }
@@ -656,7 +656,7 @@
     const h = getHistory();
     const sidebar = document.getElementById("sidebar");
     if (h.length === 0) { sidebar.style.display = "none"; return; }
-    sidebar.style.removeProperty("display");
+    sidebar.style.display = "block";
     document.getElementById("history-list").innerHTML = h.map(e => `
       <div class="history-item" onclick="showFromHistory(${e.id})">
         <button class="history-delete" onclick="event.stopPropagation();deleteFromHistory(${e.id})" title="הסר">×</button>
