@@ -396,7 +396,85 @@
     }
     @keyframes dots { 0%{content:''} 33%{content:'.'} 66%{content:'..'} 100%{content:'...'} }
 
+    /* ── HISTORY SIDEBAR ────────────────────────────────── */
+    #sidebar {
+      position: fixed;
+      top: 90px;
+      right: 0;
+      width: 195px;
+      max-height: calc(100vh - 110px);
+      overflow-y: auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: var(--radius) 0 0 var(--radius);
+      padding: 1rem 0.85rem;
+      z-index: 20;
+      box-shadow: -3px 0 18px rgba(0,0,0,0.05);
+      display: none;
+    }
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .sidebar-title {
+      font-family: 'Secular One', sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.7rem;
+      padding-bottom: 0.55rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .history-item {
+      position: relative;
+      padding: 0.5rem 0.35rem 0.5rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-bottom: 0.15rem;
+    }
+    .history-item:hover { background: var(--paper); }
+
+    .history-book {
+      font-family: 'Secular One', sans-serif;
+      font-size: 0.79rem;
+      color: var(--ink);
+      line-height: 1.35;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .history-author {
+      font-family: 'Assistant', sans-serif;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .history-delete {
+      position: absolute;
+      top: 50%; left: 0.25rem;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+      padding: 2px 3px;
+    }
+    .history-item:hover .history-delete { opacity: 0.65; }
+    .history-delete:hover { opacity: 1 !important; color: #b94040; }
+
     /* ── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 1200px) { #sidebar { display: none !important; } }
     @media (max-width: 520px) {
       .row { grid-template-columns: 1fr; }
       .form-card { padding: 1.4rem; }
@@ -477,6 +555,12 @@
   </div>
 </div>
 
+<!-- ── HISTORY SIDEBAR ── -->
+<div id="sidebar">
+  <div class="sidebar-title">ניתוחים שמורים</div>
+  <div id="history-list"></div>
+</div>
+
 <!-- ── RESULT ── -->
 <div id="result-section">
   <div class="result-bar">
@@ -520,8 +604,68 @@
     });
   }
 
-  let rawText  = "";
-  let streaming = false;
+  let rawText      = "";
+  let streaming    = false;
+  let currentName  = "";
+  let currentBook  = "";
+  let currentAuthor = "";
+
+  // ── HISTORY ──────────────────────────────────────────
+  const HISTORY_KEY = "library_history";
+  const MAX_HISTORY = 10;
+
+  function getHistory() {
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]"); }
+    catch { return []; }
+  }
+
+  function saveToHistory(name, book, author, analysis) {
+    let h = getHistory().filter(e => !(e.book === book && e.author === author));
+    h.unshift({ id: Date.now(), name, book, author, analysis });
+    if (h.length > MAX_HISTORY) h = h.slice(0, MAX_HISTORY);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
+    renderSidebar();
+  }
+
+  function deleteFromHistory(id) {
+    const h = getHistory().filter(e => e.id !== id);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
+    renderSidebar();
+  }
+
+  function showFromHistory(id) {
+    const entry = getHistory().find(e => e.id === id);
+    if (!entry) return;
+
+    const section = document.getElementById("result-section");
+    section.style.display = "block";
+    document.getElementById("result-label").textContent = `«${entry.book}» / ${entry.author}`;
+    document.getElementById("result-card").innerHTML = injectIcons(marked.parse(entry.analysis));
+    rawText = entry.analysis;
+
+    const formCard  = document.getElementById("form-card");
+    const miniBar   = document.getElementById("mini-bar");
+    const miniLabel = document.getElementById("mini-book-label");
+    formCard.style.opacity = "0"; formCard.style.maxHeight = "0";
+    formCard.style.padding = "0"; formCard.style.border = "none";
+    formCard.style.overflow = "hidden";
+    miniLabel.textContent = `«${entry.book}» / ${entry.author}`;
+    setTimeout(() => { formCard.style.display = "none"; miniBar.style.display = "flex"; }, 280);
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function renderSidebar() {
+    const h = getHistory();
+    const sidebar = document.getElementById("sidebar");
+    if (h.length === 0) { sidebar.style.display = "none"; return; }
+    sidebar.style.removeProperty("display");
+    document.getElementById("history-list").innerHTML = h.map(e => `
+      <div class="history-item" onclick="showFromHistory(${e.id})">
+        <button class="history-delete" onclick="event.stopPropagation();deleteFromHistory(${e.id})" title="הסר">×</button>
+        <div class="history-book">«${e.book}»</div>
+        <div class="history-author">${e.author}</div>
+      </div>`).join("");
+  }
 
   async function startAnalysis() {
     const name   = document.getElementById("username").value.trim();
@@ -535,6 +679,7 @@
 
     streaming = true;
     rawText = "";
+    currentName = name; currentBook = book; currentAuthor = author;
 
     // Collapse form → mini-bar
     const formCard  = document.getElementById("form-card");
@@ -615,7 +760,10 @@
 
   function finish() {
     streaming = false;
-    if (rawText) document.getElementById("result-card").innerHTML = injectIcons(marked.parse(rawText));
+    if (rawText) {
+      document.getElementById("result-card").innerHTML = injectIcons(marked.parse(rawText));
+      saveToHistory(currentName, currentBook, currentAuthor, rawText);
+    }
   }
 
   function resetForm() {
@@ -664,6 +812,8 @@
   document.getElementById("author").addEventListener("keydown", e => {
     if (e.key === "Enter") startAnalysis();
   });
+
+  renderSidebar();
 </script>
 </body>
 </html>
