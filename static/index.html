@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>סוכן הספרייה</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Rubik+Rounded&family=Noto+Rashi+Hebrew:wght@300;400;600&family=Caveat:wght@400;600&family=Assistant:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik+Rounded&family=Noto+Rashi+Hebrew:wght@300;400&family=Secular+One&family=Caveat:wght@400;600&family=Assistant:wght@300;400&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -280,34 +280,31 @@
     }
 
     .result-card h2 {
-      font-family: 'Noto Rashi Hebrew', serif;
-      font-weight: 600;
+      font-family: 'Secular One', sans-serif;
+      font-weight: 400;
       font-size: 1.05rem;
       color: var(--ink-soft);
       margin: 2.5rem 0 0.75rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-    }
-
-    /* Gold dot before h2 */
-    .result-card h2::before {
-      content: '';
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--gold);
-      flex-shrink: 0;
-      margin-top: 1px;
+      gap: 0.55rem;
     }
 
     .result-card h3 {
-      font-family: 'Noto Rashi Hebrew', serif;
-      font-size: 1rem;
-      font-weight: 700;
+      font-family: 'Secular One', sans-serif;
+      font-size: 0.97rem;
+      font-weight: 400;
       color: var(--ink);
       margin: 1.25rem 0 0.4rem;
+    }
+
+    .section-icon {
+      width: 17px;
+      height: 17px;
+      flex-shrink: 0;
+      opacity: 0.55;
+      color: var(--ink);
+      stroke: currentColor;
     }
 
     .result-card p { margin: 0.65rem 0; color: var(--ink-soft); }
@@ -492,6 +489,37 @@
 <script>
   marked.setOptions({ breaks: true });
 
+  // Pencil-sketch SVG icons for each section (injected into h2 tags by order)
+  const SECTION_ICONS = [
+    // 1. Author — quill
+    `<svg class="section-icon" viewBox="0 0 20 20" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3 C17 3 12 5 9 10 C7.5 12.5 7 16 7 18 L8.5 16.5"/><path d="M7 18 C7 18 6 15.5 7.5 14"/><line x1="17" y1="3" x2="14.5" y2="5.5"/></svg>`,
+    // 2. Book in life — open book
+    `<svg class="section-icon" viewBox="0 0 20 20" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5 C2 4.5 9 3.5 10 4.5 L10 16.5 C10 16.5 3 15.5 2 16.5 Z"/><path d="M10 4.5 C10 4.5 17 3.5 18 4.5 L18 16.5 C18 16.5 11 15.5 10 16.5 Z"/><line x1="5" y1="8" x2="8" y2="7.7" opacity="0.5"/><line x1="5" y1="10.5" x2="8" y2="10.2" opacity="0.4"/><line x1="12" y1="8" x2="15" y2="7.7" opacity="0.5"/><line x1="12" y1="10.5" x2="15" y2="10.2" opacity="0.4"/></svg>`,
+    // 3. Plot — winding path
+    `<svg class="section-icon" viewBox="0 0 20 20" fill="none" stroke-width="1.4" stroke-linecap="round"><path d="M2 10 C4 7 6 7 8 10 C10 13 12 13 14 10 C16 7 18 7 19 8.5"/><circle cx="19" cy="10" r="1.5" fill="currentColor" opacity="0.4" stroke="none"/></svg>`,
+    // 4. Characters — two figures
+    `<svg class="section-icon" viewBox="0 0 20 20" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="6" r="2.3"/><path d="M2.5 18 C2.5 14 4.5 12 7 12 C9.5 12 11.5 14 11.5 18"/><circle cx="14.5" cy="7" r="1.8" opacity="0.6"/><path d="M11.5 18 C11.5 15 12.8 13.5 14.5 13.5 C16.2 13.5 17.5 15 17.5 18" opacity="0.6"/></svg>`,
+    // 5. Themes — key
+    `<svg class="section-icon" viewBox="0 0 20 20" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="8.5" r="3.8"/><line x1="10.8" y1="11.2" x2="18" y2="18"/><line x1="15" y1="16" x2="17" y2="14"/></svg>`,
+    // 6. Style — ink nib
+    `<svg class="section-icon" viewBox="0 0 20 20" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2 L17 9 L10 18 L3 9 Z"/><line x1="10" y1="18" x2="10" y2="20"/><line x1="6.5" y1="12" x2="13.5" y2="12" opacity="0.45"/></svg>`,
+    // 7. Quotes — two quotation curves
+    `<svg class="section-icon" viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9 C4 7 5.5 5.5 7 5.5 L8 5.5 L8 9.5 L5.5 12.5 L4 12.5 Z"/><path d="M11 9 C11 7 12.5 5.5 14 5.5 L15 5.5 L15 9.5 L12.5 12.5 L11 12.5 Z"/></svg>`,
+    // 8. Critique — magnifying glass
+    `<svg class="section-icon" viewBox="0 0 20 20" fill="none" stroke-width="1.4" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5"/><line x1="12.5" y1="12.5" x2="18" y2="18"/></svg>`,
+    // 9. Discussion — chat bubbles
+    `<svg class="section-icon" viewBox="0 0 20 20" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5 L13 4.5 C13.8 4.5 14.5 5.2 14.5 6 L14.5 11 C14.5 11.8 13.8 12.5 13 12.5 L8.5 12.5 L6 15 L6 12.5 L3 12.5 C2.2 12.5 1.5 11.8 1.5 11 L1.5 6 C1.5 5.2 2.2 4.5 3 4.5 Z"/><path d="M14.5 7 L16.5 7 C17.3 7 18 7.7 18 8.5 L18 12 C18 12.8 17.3 13.5 16.5 13.5 L14.5 13.5 L14.5 15.5 L12.5 13.5" opacity="0.5"/></svg>`,
+  ];
+
+  function injectIcons(html) {
+    let idx = 0;
+    return html.replace(/<h2>/g, () => {
+      const icon = SECTION_ICONS[idx % SECTION_ICONS.length];
+      idx++;
+      return `<h2>${icon}`;
+    });
+  }
+
   let rawText  = "";
   let streaming = false;
 
@@ -574,7 +602,7 @@
             }
             if (firstChunk) { card.innerHTML = ""; firstChunk = false; }
             rawText += parsed.text;
-            card.innerHTML = marked.parse(rawText) + '<span class="cursor"></span>';
+            card.innerHTML = injectIcons(marked.parse(rawText)) + '<span class="cursor"></span>';
           } catch (_) {}
         }
       }
@@ -587,7 +615,7 @@
 
   function finish() {
     streaming = false;
-    if (rawText) document.getElementById("result-card").innerHTML = marked.parse(rawText);
+    if (rawText) document.getElementById("result-card").innerHTML = injectIcons(marked.parse(rawText));
   }
 
   function resetForm() {
