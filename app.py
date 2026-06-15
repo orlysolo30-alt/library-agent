@@ -56,7 +56,7 @@ def all_uses():
 
 # ── SYSTEM PROMPT ─────────────────────────────────────────────────────────────
 
-SYSTEM_PROMPT = """⚠️ CRITICAL FORMATTING RULE — READ THIS FIRST:
+SYSTEM_PROMPT = """CRITICAL FORMATTING RULE — READ THIS FIRST:
 You MUST write in flowing prose paragraphs ONLY.
 NEVER use bullet points (- or *), NEVER use numbered lists (1. 2. 3.), NEVER use dashes to list items.
 Every single section must be written as connected paragraphs, like a personal essay or a letter to a friend.
@@ -142,6 +142,21 @@ async def analyze(req: BookRequest, request: Request):
 
     if not name or not book or not author:
         raise HTTPException(400, "Missing fields")
+
+    # If author is a single word, it's likely just a last name — ask for full name
+    if len(author.split()) == 1:
+        async def need_full_name():
+            msg = (
+                "כדי לספק ניתוח מדויק, אני זקוקה ל**שם מלא של הסופר/ת** — שם פרטי ושם משפחה.\n\n"
+                f"למשל: במקום _{author}_ בלבד, כתבי את השם המלא כגון _מרלן האוסהופר_, _עמוס עוז_ וכדומה."
+            )
+            yield f"data: {json.dumps({'text': msg}, ensure_ascii=False)}\n\n"
+            yield "data: [DONE]\n\n"
+        return StreamingResponse(
+            need_full_name(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
 
     gh_token = os.environ.get("GITHUB_TOKEN")
     if not gh_token:
