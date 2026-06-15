@@ -287,6 +287,10 @@
 
 <div class="form-wrapper">
   <div class="form-card">
+    <div class="input-group" style="margin-bottom:1.1rem">
+      <label for="username">שמך</label>
+      <input id="username" type="text" placeholder="למשל: שרה" autocomplete="name" />
+    </div>
     <div class="input-row">
       <div class="input-group">
         <label for="book">שם הספר</label>
@@ -320,10 +324,12 @@
   let streaming = false;
 
   async function startAnalysis() {
-    const book = document.getElementById("book").value.trim();
+    const name   = document.getElementById("username").value.trim();
+    const book   = document.getElementById("book").value.trim();
     const author = document.getElementById("author").value.trim();
 
-    if (!book) { document.getElementById("book").focus(); return; }
+    if (!name)   { document.getElementById("username").focus(); return; }
+    if (!book)   { document.getElementById("book").focus(); return; }
     if (!author) { document.getElementById("author").focus(); return; }
     if (streaming) return;
 
@@ -347,7 +353,7 @@
       const response = await fetch("/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ book, author }),
+        body: JSON.stringify({ name, book, author }),
       });
 
       if (!response.ok) {
@@ -414,6 +420,9 @@
     });
   }
 
+  document.getElementById("username").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("book").focus();
+  });
   document.getElementById("book").addEventListener("keydown", (e) => {
     if (e.key === "Enter") document.getElementById("author").focus();
   });
