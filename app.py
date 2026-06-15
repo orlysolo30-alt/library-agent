@@ -56,7 +56,10 @@ def all_uses():
 
 # ── SYSTEM PROMPT ─────────────────────────────────────────────────────────────
 
-SYSTEM_PROMPT = """CRITICAL FORMATTING RULE — READ THIS FIRST:
+SYSTEM_PROMPT = """ACCURACY RULE — READ THIS FIRST AND NEVER VIOLATE:
+Only write factual information you are CERTAIN about. If you do not know the exact plot of a book, the exact biographical details, or any specific facts — do NOT invent or guess. Write instead: "אין לי מידע מדויק מספיק על נושא זה" and move on. It is far better to acknowledge limited knowledge than to provide wrong information. Never fill gaps with speculation or similar books/authors.
+
+CRITICAL FORMATTING RULE:
 You MUST write in flowing prose paragraphs ONLY.
 NEVER use bullet points (- or *), NEVER use numbered lists (1. 2. 3.), NEVER use dashes to list items.
 Every single section must be written as connected paragraphs, like a personal essay or a letter to a friend.
