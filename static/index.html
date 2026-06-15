@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>סוכן הספרייה</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&family=Frank+Ruhl+Libre:wght@300;400;700&family=Caveat:wght@400;600&family=Assistant:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik+Rounded&family=Noto+Rashi+Hebrew:wght@300;400;600&family=Caveat:wght@400;600&family=Assistant:wght@300;400&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,7 +27,7 @@
     body {
       background: var(--paper);
       color: var(--ink);
-      font-family: 'Frank Ruhl Libre', serif;
+      font-family: 'Rubik Rounded', 'Assistant', sans-serif;
       font-size: 16px;
       line-height: 1.75;
       direction: rtl;
@@ -48,8 +48,8 @@
     }
 
     h1 {
-      font-family: 'Rubik', sans-serif;
-      font-weight: 700;
+      font-family: 'Rubik Rounded', sans-serif;
+      font-weight: 400;
       font-size: clamp(2rem, 5vw, 2.8rem);
       color: var(--ink);
       letter-spacing: -0.01em;
@@ -98,7 +98,7 @@
       border-radius: 10px;
       padding: 0.75rem 1.1rem;
       cursor: pointer;
-      font-family: 'Rubik', sans-serif;
+      font-family: 'Rubik Rounded', sans-serif;
       font-size: 0.88rem;
       color: var(--muted);
       transition: border-color 0.2s, box-shadow 0.2s;
@@ -141,11 +141,10 @@
 
     label {
       display: block;
-      font-family: 'Rubik', sans-serif;
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      font-family: 'Noto Rashi Hebrew', serif;
+      font-size: 0.82rem;
+      font-weight: 300;
+      letter-spacing: 0.04em;
       color: var(--muted);
       margin-bottom: 0.45rem;
     }
@@ -156,7 +155,7 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 0.7rem 0.95rem;
-      font-family: 'Frank Ruhl Libre', serif;
+      font-family: 'Rubik Rounded', sans-serif;
       font-size: 1rem;
       color: var(--ink);
       direction: rtl;
@@ -181,9 +180,9 @@
       color: var(--paper);
       border: none;
       border-radius: 9px;
-      font-family: 'Rubik', sans-serif;
+      font-family: 'Rubik Rounded', sans-serif;
       font-size: 1rem;
-      font-weight: 500;
+      font-weight: 400;
       letter-spacing: 0.04em;
       cursor: pointer;
       display: flex;
@@ -270,8 +269,8 @@
 
     /* ── MARKDOWN STYLES ─────────────────────────────────── */
     .result-card h1 {
-      font-family: 'Rubik', sans-serif;
-      font-weight: 700;
+      font-family: 'Rubik Rounded', sans-serif;
+      font-weight: 400;
       font-size: clamp(1.3rem, 3.5vw, 1.65rem);
       color: var(--ink);
       margin: 0 0 1.5rem;
@@ -281,8 +280,8 @@
     }
 
     .result-card h2 {
-      font-family: 'Rubik', sans-serif;
-      font-weight: 500;
+      font-family: 'Noto Rashi Hebrew', serif;
+      font-weight: 600;
       font-size: 1.05rem;
       color: var(--ink-soft);
       margin: 2.5rem 0 0.75rem;
@@ -304,7 +303,7 @@
     }
 
     .result-card h3 {
-      font-family: 'Frank Ruhl Libre', serif;
+      font-family: 'Noto Rashi Hebrew', serif;
       font-size: 1rem;
       font-weight: 700;
       color: var(--ink);
